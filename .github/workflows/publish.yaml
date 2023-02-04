@@ -1,25 +1,16 @@
-name: Push (main)
+name: Publish
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "rockcraft.yaml"
-      - "files/**"
-      - ".github/workflows/**.yaml"
+  workflow_call:
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: magma-orc8r-controller
 
 jobs:
-  build:
-    uses: ./.github/workflows/build.yaml
 
   publish:
-    needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -31,12 +22,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
       - name: Install skopeo
         run: |
           sudo snap install --devmode --channel edge skopeo
@@ -47,7 +32,7 @@ jobs:
 
       - uses: actions/download-artifact@v3
         with:
-          name: magma-orc8r-controller-rock
+          name: rock
 
       - name: Import and push to github package
         run: |

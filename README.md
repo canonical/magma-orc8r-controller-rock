@@ -9,6 +9,6 @@ Rock for Magma's orchestrator controller service built using
 ## Usage
 
 ```bash
-docker pull ghcr.io/canonical/magma-orc8r-controller:1.6.0
-docker run -it ghcr.io/canonical/magma-orc8r-controller:1.6.0
+docker pull ghcr.io/canonical/magma-orc8r-controller:1.6.1
+docker run -it ghcr.io/canonical/magma-orc8r-controller:1.6.1
 ```
