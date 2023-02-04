@@ -1,0 +1,124 @@
+name: magma-orc8r-controller
+summary: Magma Orchestrator Controller
+description: |
+  Magma Orchestrator Controller
+version: "1.6.0"
+license: Apache-2.0
+base: ubuntu:18.04
+platforms:
+  amd64:
+
+cmd: ["/usr/bin/envdir", "/var/opt/magma/envdir", "/var/opt/magma/bin/orchestrator", "-logtostderr=true", "-v=0"]
+
+env:
+  - DATABASE_SOURCE: f"dbname=magma user=username password=password host=127.0.0.1 sslmode=disable"
+  - SQL_DRIVER: postgres
+  - SQL_DIALECT: psql
+  - SERVICE_HOSTNAME: magma-orc8r-certifier
+  - SERVICE_REGISTRY_MODE": k8s
+  - SERVICE_REGISTRY_NAMESPACE": namespace
+
+parts:
+
+  build-context:
+    plugin: dump
+    source: files
+    organize:
+      build_context.py: var/opt/scripts/
+
+  swagger:
+    plugin: dump
+    source: https://github.com/swagger-api/swagger-ui/archive/v3.1.7.zip
+    organize:
+      swagger-ui-3.1.7/dist: var/opt/magma/static/swagger-ui/dist/
+    stage:
+      - var/opt/magma/static/swagger-ui/
+
+  magma-orc8r-controller:
+    plugin: dump
+    source: https://github.com/magma/magma
+    after: [build-context]
+    source-type: git
+    source-tag: v1.6
+    build-packages:
+      - curl
+      - protobuf-compiler
+    stage-packages:
+      - daemontools
+      - netcat
+      - openssl
+      - supervisor
+    stage:
+      - var/opt/magma
+      - etc/magma
+      - etc/supervisor
+      - usr/local/bin
+      - usr/local/lib/python2.7/dist-packages/supervisor_logger.py
+      - usr/bin/envdir
+    build-snaps:
+      - go/1.13/stable
+    build-environment:
+      - MAGMA_MODULES: "orc8r lte feg"
+      - MAGMA_ROOT: "/src/magma"
+      - SWAGGER_FILES: "/src/magma/orc8r/cloud/go/obsidian/swagger"
+      - CNTLR_FILES: "/src/magma/orc8r/cloud/docker/controller"
+      - GO111MODULE: "on"
+      - GOPATH: "/root/go"
+      - GOBIN: "/build/bin"
+    override-build: |
+      set -x
+      
+      export PATH=${PATH}:${GOBIN}:${GOPATH}/bin
+      
+      cp ${CRAFT_STAGE}/var/opt/scripts/build_context.py ${CRAFT_PART_SRC}/orc8r/cloud/docker
+      cd ${CRAFT_PART_SRC}/orc8r/cloud/docker
+      ./build_context.py
+
+      # Gocache: cache Go modules
+      cp -r /tmp/magma_orc8r_build/gomod /
+      cd /gomod/src/magma/orc8r/cloud/go && go mod download
+      cd /gomod/src/magma/lte/cloud/go && go mod download
+      cd /gomod/src/magma/feg/cloud/go && go mod download
+
+      # Src: different src depending on MAGMA_MODULES
+      export MAGMA_MODULES="/src/magma/orc8r /src/magma/lte /src/magma/feg"
+      cp -r /tmp/magma_orc8r_build/src /
+      cd /src/magma/orc8r/cloud
+      make tools
+
+      # Configs
+      mkdir -p ${CRAFT_PART_INSTALL}/etc/magma/configs
+      cp -r /tmp/magma_orc8r_build/configs ${CRAFT_PART_INSTALL}/etc/magma/
+
+      # Builder: compile src
+      cd /src/magma/orc8r/cloud
+      make build
+
+      # Script to wait for DB to be reachable
+      mkdir -p ${CRAFT_PART_INSTALL}/usr/local/bin
+      cp /src/magma/orc8r/cloud/docker/wait-for-it.sh ${CRAFT_PART_INSTALL}/usr/local/bin
+
+      # Empty envdir for overriding in production
+      mkdir -p ${CRAFT_PART_INSTALL}/var/opt/magma/envdir
+
+      # Build artifacts
+      mkdir -p ${CRAFT_PART_INSTALL}/var/opt/magma/static/swagger/v1/ui/
+      mkdir -p ${CRAFT_PART_INSTALL}/var/opt/magma/static/swagger/v1/static/
+      mkdir -p ${CRAFT_PART_INSTALL}/var/opt/magma/static/swagger/v1/spec/
+      mkdir -p ${CRAFT_PART_INSTALL}/etc/magma/swagger
+      cp ${SWAGGER_FILES}/v1/index.html ${CRAFT_PART_INSTALL}/var/opt/magma/static/swagger/v1/ui/index.html
+      cp ${SWAGGER_FILES}/v1/css/sidebar.css ${CRAFT_PART_INSTALL}/var/opt/magma/static/swagger/v1/static/sidebar.css
+      cp ${SWAGGER_FILES}/v1/swagger.yml ${CRAFT_PART_INSTALL}/var/opt/magma/static/swagger/v1/spec/swagger.yml
+      cp -r /src/magma/orc8r/cloud/swagger ${CRAFT_PART_INSTALL}/etc/magma/
+      cp -r /build/bin ${CRAFT_PART_INSTALL}/var/opt/magma/bin
+
+      # Supervisor configs
+      mkdir -p ${CRAFT_PART_INSTALL}/usr/local/lib/python2.7/dist-packages/
+      cp ${CNTLR_FILES}/supervisord.conf ${CRAFT_PART_INSTALL}/etc/supervisor/conf.d/supervisord.conf
+      cp ${CNTLR_FILES}/supervisor_logger.py ${CRAFT_PART_INSTALL}/usr/local/lib/python2.7/dist-packages/supervisor_logger.py
+
+      # Scripts for dev mode
+      cp ${CNTLR_FILES}/create_test_controller_certs ${CRAFT_PART_INSTALL}/usr/local/bin/create_test_controller_certs
+
+      # Configs
+      cp -r /tmp/magma_orc8r_build/configs ${CRAFT_PART_INSTALL}/etc/magma/
