@@ -4,7 +4,7 @@ description: |
   Magma Orchestrator Controller
 version: "1.6.1"
 license: Apache-2.0
-base: ubuntu:18.04
+base: ubuntu:22.04
 platforms:
   amd64:
 
@@ -19,15 +19,6 @@ env:
   - SERVICE_REGISTRY_NAMESPACE": namespace
 
 parts:
-
-  lte:
-    plugin: go
-    source: https://github.com/magma/magma/
-    source-type: git
-    source-tag: v1.6.1
-    source-subdir: lte/cloud/go
-    build-snaps:
-      - go
 
   orchestrator:
     plugin: go
