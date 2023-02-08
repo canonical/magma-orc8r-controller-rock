@@ -8,3 +8,7 @@ on:
 jobs:
   build:
     uses: ./.github/workflows/build.yaml
+
+  test:
+    needs: build
+    uses: ./.github/workflows/test.yaml
