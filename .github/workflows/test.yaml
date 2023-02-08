@@ -42,5 +42,5 @@ jobs:
         run: |
           image_name="$(yq '.name' rockcraft.yaml)"
           version="$(yq '.version' rockcraft.yaml)"
-          docker run -d -p 8080:10112 ghcr.io/gruyaume/${image_name}:${version}
+          docker run -d -p 8080:10112 ghcr.io/canonical/${image_name}:${version}
           cd tests && tox -e integration
