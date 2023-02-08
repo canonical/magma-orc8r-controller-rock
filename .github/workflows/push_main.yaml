@@ -9,6 +9,10 @@ jobs:
   build:
     uses: ./.github/workflows/build.yaml
 
-  publish:
+  test:
     needs: build
+    uses: ./.github/workflows/test.yaml
+
+  publish:
+    needs: test
     uses: ./.github/workflows/publish.yaml
