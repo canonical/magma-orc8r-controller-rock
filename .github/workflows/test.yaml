@@ -32,7 +32,7 @@ jobs:
             --insecure-policy \
             copy \
             oci-archive:"${rock_file}" \
-            docker-daemon:"ghcr.io/gruyaume/${image_name}:${version}"
+            docker-daemon:"ghcr.io/canonical/${image_name}:${version}"
 
       - name: Install tox
         run: |
