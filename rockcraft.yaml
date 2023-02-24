@@ -3,7 +3,7 @@ summary: Magma Orchestrator Controller
 description: |
   Magma's Orchestrator is a centralized controller for a set of networks. Orchestrator handles the 
   control plane for various types of gateways in Magma.
-version: "1.6.1"
+version: "1.8.0"
 license: Apache-2.0
 base: ubuntu:22.04
 platforms:
@@ -25,7 +25,7 @@ parts:
     plugin: go
     source: https://github.com/magma/magma/
     source-type: git
-    source-tag: v1.6.1
+    source-tag: v1.8.0
     source-subdir: orc8r/cloud/go
     build-snaps:
       - go
@@ -34,7 +34,7 @@ parts:
     plugin: dump
     source: https://github.com/magma/magma/
     source-type: git
-    source-tag: v1.6.1
+    source-tag: v1.8.0
     source-subdir: orc8r/cloud/
     organize:
       configs: etc/magma/configs/orc8r/
@@ -56,7 +56,7 @@ parts:
       - orchestrator
     source: https://github.com/magma/magma/
     source-type: git
-    source-tag: v1.6.1
+    source-tag: v1.8.0
     build-packages:
       - apt-transport-https
       - gnupg
