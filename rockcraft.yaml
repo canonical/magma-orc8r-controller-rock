@@ -8,8 +8,7 @@ license: Apache-2.0
 base: ubuntu:22.04
 platforms:
   amd64:
-
-cmd: ["orchestrator", "-run_echo_server=true", "-logtostderr=true", "-v=0"]
+cmd: ["/usr/bin/envdir", "/var/opt/magma/envdir", "/var/opt/magma/bin/orchestrator", "-run_echo_server=true", "-logtostderr=true", "-v=0"]
 
 env:
   - DATABASE_SOURCE: f"dbname=magma user=username password=password host=127.0.0.1 sslmode=disable"
