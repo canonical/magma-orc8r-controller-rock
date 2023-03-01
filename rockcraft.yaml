@@ -83,6 +83,6 @@ parts:
       make swagger
 
       cp -r $CRAFT_PART_SRC/orc8r/cloud/swagger/ $CRAFT_PART_INSTALL/etc/magma/
-      cp $CRAFT_PART_SRC/orc8r/cloud/go/obsidian/swagger/v1/index.html $CRAFT_PART_INSTALL/var/opt/magma/static/swagger/v1/ui/index.html
-      cp $CRAFT_PART_SRC/orc8r/cloud/go/obsidian/swagger/v1/css/sidebar.css $CRAFT_PART_INSTALL/var/opt/magma/static/swagger/v1/static/sidebar.css
-      cp $CRAFT_PART_SRC/orc8r/cloud/go/obsidian/swagger/v1/swagger.yml $CRAFT_PART_INSTALL/var/opt/magma/static/swagger/v1/spec/swagger.yml
+      cp $CRAFT_PART_SRC/orc8r/cloud/go/services/obsidian/swagger/v1/index.html $CRAFT_PART_INSTALL/var/opt/magma/static/swagger/v1/ui/index.html
+      cp $CRAFT_PART_SRC/orc8r/cloud/go/services/obsidian/swagger/v1/css/sidebar.css $CRAFT_PART_INSTALL/var/opt/magma/static/swagger/v1/static/sidebar.css
+      cp $CRAFT_PART_SRC/orc8r/cloud/go/services/obsidian/swagger/v1/swagger.yml $CRAFT_PART_INSTALL/var/opt/magma/static/swagger/v1/spec/swagger.yml
