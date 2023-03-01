@@ -62,6 +62,7 @@ parts:
       - curl
       - debian-keyring
       - debian-archive-keyring
+    stage-packages:
       - daemontools
     build-snaps:
       - go
