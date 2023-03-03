@@ -30,6 +30,10 @@ parts:
       - go
     stage-packages:
       - daemontools
+    override-prime: |
+      set -x
+      mkdir -p $CRAFT_PRIME/var/opt/magma/envdir
+      craftctl default
 
   configs:
     plugin: dump
