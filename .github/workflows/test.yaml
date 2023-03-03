@@ -33,7 +33,6 @@ jobs:
             copy \
             oci-archive:"${rock_file}" \
             docker-daemon:"ghcr.io/canonical/${image_name}:${version}"
-          docker image list
 
       - name: Install tox
         run: |
@@ -43,6 +42,5 @@ jobs:
         run: |
           image_name="$(yq '.name' rockcraft.yaml)"
           version="$(yq '.version' rockcraft.yaml)"
-          docker image list
           docker run -d -p 8080:10112 ghcr.io/canonical/${image_name}:${version}
           cd tests && tox -e integration

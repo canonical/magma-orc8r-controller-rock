@@ -28,6 +28,8 @@ parts:
     source-subdir: orc8r/cloud/go
     build-snaps:
       - go
+    stage-packages:
+      - daemontools
 
   configs:
     plugin: dump
@@ -62,8 +64,6 @@ parts:
       - curl
       - debian-keyring
       - debian-archive-keyring
-    stage-packages:
-      - daemontools
     build-snaps:
       - go
     build-environment:
