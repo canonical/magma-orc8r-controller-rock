@@ -8,7 +8,7 @@ license: Apache-2.0
 base: ubuntu:22.04
 platforms:
   amd64:
-cmd: ["/usr/bin/envdir", "/var/opt/magma/envdir", "/var/opt/magma/bin/orchestrator", "-run_echo_server=true", "-logtostderr=true", "-v=0"]
+cmd: ["orchestrator", "-run_echo_server=true", "-logtostderr=true", "-v=0"]
 
 env:
   - DATABASE_SOURCE: f"dbname=magma user=username password=password host=127.0.0.1 sslmode=disable"
@@ -28,13 +28,6 @@ parts:
     source-subdir: orc8r/cloud/go
     build-snaps:
       - go
-    stage-packages:
-      - daemontools
-    override-prime: |
-      set -x
-      mkdir -p $CRAFT_PRIME/var/opt/magma/envdir
-      craftctl default
-      cp -R bin $CRAFT_PRIME/var/opt/magma/
 
   configs:
     plugin: dump
