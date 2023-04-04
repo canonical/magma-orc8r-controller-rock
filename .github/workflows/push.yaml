@@ -1,9 +1,7 @@
-name: Push (any)
+name: Push
 
 on:
   push:
-    branches-ignore:
-      - "main"
 
 jobs:
 
@@ -19,3 +17,8 @@ jobs:
   test:
     needs: build
     uses: ./.github/workflows/test.yaml
+
+  publish:
+    if: github.ref_name == 'main'
+    needs: test
+    uses: ./.github/workflows/publish.yaml
